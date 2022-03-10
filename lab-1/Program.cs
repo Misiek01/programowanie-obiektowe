@@ -56,6 +56,22 @@ namespace lab_1
             {
                 Console.WriteLine(p.ToString());
             }
+            Console.WriteLine("Sortowanie cw10");//Ćw10
+            Student[] students =
+            {
+                new Student{ Nazwisko="Nowak", Imie="Maciej", Średnia=3.0m },
+                new Student{ Nazwisko="Nowak", Imie="Krzysztof", Średnia=2.0m },
+                new Student{ Nazwisko="Paruzel", Imie="Tadeusz", Średnia=5.0m },
+                new Student{ Nazwisko="Jeleń", Imie="Bartłomiej", Średnia=4.0m },
+                new Student{ Nazwisko="Anioł", Imie="Michał", Średnia=3.5m }
+            };
+            Array.Sort(students);
+            foreach (var p in students)
+            {
+                Console.WriteLine(p.ToString());
+            }
+
+
         }
     }
     public enum Currency
@@ -64,6 +80,7 @@ namespace lab_1
         USD = 2,
         EUR = 3
     }
+
     public class Money : IEquatable<Money>, IComparable<Money>
     {
         private readonly decimal _value;
@@ -75,12 +92,12 @@ namespace lab_1
             _value = value;
             _currency = currency;
         }
-        public decimal Value { get => _value; }
-        public Currency Currency { get => _currency; }
+        
         public static Money Of(decimal value, Currency currency)
         {
             return value < 0 ? null : new Money(value, currency);
         }
+        //Ćwiczenie 1
         public static Money OfWithException(decimal value, Currency currency)
         {
             if (value < 0)
@@ -92,14 +109,43 @@ namespace lab_1
                 return new Money(value, currency);
             }
         }
+        //Ćwiczenie 3
+        public decimal Value { get => _value; }
+        public Currency Currency { get => _currency; }
+        //Ćwieczenie 4
         public static Money operator *(Money money, decimal factor)
         {
             return Money.Of(money.Value * factor, money.Currency);
         }
+        //Ćwiczenie 5
         public static Money operator +(Money a, Money b)
         {
             IsSameCurrencies(a, b);
             return Money.Of(a.Value + b.Value, a.Currency);
+        }
+        //Ćwiczenie 6
+        public static bool operator <(Money a, Money b)
+        {
+            IsSameCurrencies(a, b);
+            return a.Value < b.Value;
+        }
+        public static bool operator >(Money a, Money b)
+        {
+            IsSameCurrencies(a, b);
+            return a.Value > b.Value;
+        }
+        //Ćwiczenie 7
+        public static implicit operator decimal(Money money)//nie jawne
+        {
+            return money.Value;
+        }
+        public static explicit operator double(Money money) //jawne
+        {
+            return (double)money.Value;
+        }
+        public static explicit operator float(Money money)
+        {
+            return (float)money.Value;
         }
 
         private static void IsSameCurrencies(Money a, Money b)
@@ -109,26 +155,7 @@ namespace lab_1
                 throw new ArgumentException("Diffrent currencies!");
             }
         }
-
-        public static bool operator <(Money a, Money b)
-        {
-            IsSameCurrencies(a, b);
-            return a.Value < b.Value;
-        }
-
-        public static bool operator >(Money a, Money b)
-        {
-            IsSameCurrencies(a, b);
-            return a.Value > b.Value;
-        }
-        public static implicit operator decimal(Money money)//nie jawne
-        {
-            return money.Value;
-        }
-        public static explicit operator double(Money money) //jawne
-        {
-            return (double)money.Value;
-        }
+        
 
         
 
@@ -165,6 +192,103 @@ namespace lab_1
             {
                 return curResults;
             }
+        }
+    }
+    public class Tank
+    {
+        public readonly int Capacity;
+        private int _level;
+        public Tank(int capacity)
+        {
+            Capacity = capacity;
+        }
+        public int Level
+        {
+            get
+            {
+                return _level;
+            }
+            private set
+            {
+                if (value < 0 || value > Capacity)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                _level = value;
+            }
+        }
+        public bool refuel(int amount)
+        {
+            if (amount < 0)
+            {
+                return false;
+            }
+            if (_level + amount > Capacity)
+            {
+                return false;
+            }
+            _level += amount;
+            return true;
+        }
+
+        //Ćwiczenie 8
+        public bool consume(int amount)
+        {
+            if (amount <= 0 || amount > Level)
+                return false;
+            Level -= amount;
+            return true;
+        }
+
+        //Ćwiczenie 9
+        public bool refuel(Tank sourceTank, int amount)
+        {
+            if (sourceTank.Level <= 0 || amount + Level > Capacity
+                || sourceTank.Level - amount < 0)
+                return false;
+
+            sourceTank.Level -= amount;
+            Level += amount;
+            return true;
+        }
+    }
+    //Ćwiczenie 10
+    class Student : IComparable
+    {
+        public string Nazwisko { get; set; }
+        public string Imie { get; set; }
+        public decimal Średnia { get; set; }
+        public int CompareTo(Student? otherStudent)
+        {
+            if (ReferenceEquals(this, otherStudent))
+                return 0;
+            if (ReferenceEquals(null, otherStudent))
+                return 1;
+
+            var srednia = Średnia.CompareTo(otherStudent.Średnia);
+            var nazwisko = Nazwisko.CompareTo(otherStudent.Nazwisko);
+
+            if (srednia != 0)
+                return -srednia;
+
+            else if (nazwisko != 0)
+                return nazwisko;
+
+            else
+                return Imie.CompareTo(otherStudent.Średnia);
+        }
+        public int CompareTo(object other)
+        {
+            if (ReferenceEquals(this, other))
+                return 0;
+            if (ReferenceEquals(null, other))
+                return 1;
+            return CompareTo((Student)other);
+        }
+
+        public override string ToString()
+        {
+            return $"{Średnia}, {Nazwisko}, {Imie}";
         }
     }
 
