@@ -23,6 +23,7 @@ namespace lab_7
         }
         static void Main(string[] args)
         {
+            
             Operator operation = Addition;
             double result = operation.Invoke(4, 6);
             Console.WriteLine(result);
